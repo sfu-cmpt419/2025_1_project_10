@@ -89,7 +89,7 @@ Steps to reproduce the project setup:
 python download_data.py  # (Downloads dataset from Google Drive automatically)
 
 # Step 2: Train Model
-conda activate cmpt419_project
+conda activate cmpt419_project    # (Skip this if already activated)
 python train_model.py    # (Alternatively, run main.ipynb)
 
 # Step 3: Launch Web Application
