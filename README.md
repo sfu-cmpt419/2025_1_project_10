@@ -71,6 +71,8 @@ repository
 
 ## 2. Installation
 
+#### Note: All implementation was done in Windows environment
+
 Provide sufficient instructions to reproduce and install your project. 
 Provide _exact_ versions, test on CSIL or reference workstations.
 Follow these steps to install the project dependencies and environment:
