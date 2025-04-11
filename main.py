@@ -17,10 +17,6 @@ train_df = pd.read_csv('data/train_df.csv', usecols=['image_path', 'Target'])
 train_df['Target'] = train_df['Target'].str.strip()
 train_df['image_path'] = train_df['image_path'].apply(lambda x: os.path.join("data", x.lstrip("./")))
 
-split_data = train_df[['image_path', 'Target']]
-train, test = train_test_split(train_df[['image_path', 'Target']], test_size=0.2)
-train.shape, test.shape
-
 multi_labels = [i for i, target in enumerate(train_df['Target']) if len(target) > 2]
 
 corrected_labels = []
@@ -31,6 +27,8 @@ for ml in multi_labels:
 train_df = pd.concat([train_df.drop(train_df.loc[multi_labels].index),
                      pd.DataFrame(corrected_labels, columns=['image_path', 'Target'])], ignore_index=True)
 
+split_data = train_df[['image_path', 'Target']]
+train, test = train_test_split(train_df[['image_path', 'Target']], test_size=0.2)
 
 # Step 1: Dataset and DataLoader
 class XrayDataset(Dataset):
@@ -107,7 +105,7 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
 # Step 4: Training Loop
-epochs = 10  # You can adjust the number of epochs as needed
+epochs = 100  # You can adjust the number of epochs as needed
 
 for epoch in range(epochs):
     model.train()
