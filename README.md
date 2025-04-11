@@ -1,8 +1,15 @@
 # SFU CMPT 419 Project FieldView X-Ray: Anatomical Field of View Detection
 
 **XAIVision** (X-ray Anatomical Intelligent Vision System) is a deep learning-based tool for detecting the anatomical field of view from X-ray images.
+
 Kai cho
+
+Ekamdeep Kaur
+
+Sung Han
+
 Iain Chun
+
 Brian Park
 
 
