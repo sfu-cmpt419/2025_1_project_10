@@ -1,4 +1,4 @@
-name: cmpt419_project_pytorch
+name: cmpt419_project
 channels:
   - conda-forge
   - defaults
@@ -17,6 +17,7 @@ dependencies:
   - seaborn
   - scipy
   - h5py
+  - opencv
   - pip
   - pip:
       - torch==2.6.0+cu118
@@ -25,4 +26,5 @@ dependencies:
       - torchinfo
       - flask
       - flask-cors
+      - gdown
       - --extra-index-url https://download.pytorch.org/whl/cu118
