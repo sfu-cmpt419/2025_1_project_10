@@ -90,7 +90,7 @@ python download_data.py  # (Downloads dataset from Google Drive automatically)
 
 # Step 2: Train Model
 conda activate cmpt419_project    # (Skip this if already activated)
-python train_model.py    # (Alternatively, run main.ipynb)
+python model.py
 
 # Step 3: Launch Web Application
 python app.py
