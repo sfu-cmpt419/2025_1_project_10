@@ -5,7 +5,7 @@ import torchvision.transforms as transforms
 from PIL import Image
 import os
 
-from model import CNNClassifier
+from model_front import CNNClassifier
 
 app = Flask(__name__)
 CORS(app)
