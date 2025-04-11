@@ -18,8 +18,6 @@
  [Project report](https://www.overleaf.com/2253418857zcztgqzwfpgm#37e079) |
  [Database](https://www.kaggle.com/competitions/unifesp-x-ray-body-part-classifier) |
 
-## Video/demo/GIF
-Record a short video (1:40 - 2 minutes maximum) or gif or a simple screen recording or even using PowerPoint with audio or with text, showcasing your work.
 ## Demo Video
 [![Watch the demo](https://img.youtube.com/vi/hTeoiOdVxuU/0.jpg)](https://www.youtube.com/watch?v=hTeoiOdVxuU)
 
