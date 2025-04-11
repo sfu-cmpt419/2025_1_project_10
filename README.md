@@ -52,7 +52,7 @@ print(response.json())
 ```bash
 repository
 ├── app.py                       ## Flask backend server for model inference
-├── model.py                     ## PyTorch model architecture (CNNClassifier)
+├── model_front.py                       ## PyTorch model architecture (CNNClassifier)
 ├── data/                        ## Placeholder for dataset (excluded from repository)
 ├── scripts/                     ## Future space for utility scripts (optional)
 ├── README.md                     ## This documentation file
@@ -83,7 +83,7 @@ Steps to reproduce the project setup:
 python download_data.py  # (Downloads dataset from Google Drive automatically)
 
 # Step 2: Train Model
-conda activate cmpt419_project_pytorch
+conda activate cmpt419_project
 python train_model.py    # (Alternatively, run main.ipynb)
 
 # Step 3: Launch Web Application
@@ -100,7 +100,7 @@ After training or loading a pre-trained model ```xray_model.pth```, you can inte
 
 - ```app.py``` (Flask backend)
 
-- ```model.py``` (CNN model definition)
+- ```model_front.py``` (CNN model definition)
 
 - ```xray_model.pth``` (trained model weights)
 
@@ -109,7 +109,7 @@ After training or loading a pre-trained model ```xray_model.pth```, you can inte
 ### 2. Launch the Flask server:
 
 ```bash
-conda activate cmpt419_project_pytorch    # (Skip this if already activated)
+conda activate cmpt419_project    # (Skip this if already activated)
 python app.py
 ```
 ### 3. Open the frontend:
