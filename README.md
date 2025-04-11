@@ -51,13 +51,13 @@ print(response.json())
 
 ```bash
 repository
-├── app.py               ## Flask backend server for model inference
-├── model_front.py        ## PyTorch model architecture (CNNClassifier)
+├── app.py                ## Flask backend server for model inference
+├── model_front.py        ## PyTorch model architecture used for webpage(CNNClassifier)
 ├── download_data.py      ## Script to automatically download the dataset (from Google Drive)
 ├── main.ipynb            ## Main training notebook (finalized version)
-├── main_back.py          ## Backup of the model training code
-├── preprocess.py         ## Preprocessing helper functions
+├── main.py               ## .py file of the main training code
 ├── src/                  ## (Empty or optional scripts folder - not actively used now)
+│   └── preprocess.py         ## Preprocessing helper functions
 ├── LICENSE               ## Open-source license information
 ├── README.md             ## Project documentation
 ├── requirements.yml      ## Conda environment specifications
