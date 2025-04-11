@@ -1,4 +1,4 @@
-# SFU CMPT 419 Project Template -- Replace with project title
+# SFU CMPT 419 Project FieldView X-Ray: Anatomical Field of View Detection
 This repository is a template for your CMPT 419 course project.
 Replace the title with your project title, and **add a snappy acronym that people remember (mnemonic)**.
 
