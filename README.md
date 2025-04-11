@@ -2,15 +2,13 @@
 
 **XAIVision** (X-ray Anatomical Intelligent Vision System) is a deep learning-based tool for detecting the anatomical field of view from X-ray images.
 
-Kai cho
+### Team Members:
 
-Ekamdeep Kaur
-
-Sung Han
-
-Iain Chun
-
-Brian Park
+- Kai Cho
+- Ekamdeep Kaur
+- Sung Han
+- Iain Chun
+- Sanghyeok Park
 
 
 ## Important Links
