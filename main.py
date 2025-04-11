@@ -7,15 +7,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
-from torchvision import transforms
-
-from PIL import Image
-from PIL import ImageFilter as Filter
-
 
 from sklearn.model_selection import train_test_split
 
-from preprocess import *
+from src.preprocess import *
 
 train_df = pd.read_csv('data/train_df.csv', usecols=['image_path', 'Target'])
 
