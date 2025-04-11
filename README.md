@@ -51,13 +51,19 @@ print(response.json())
 
 ```bash
 repository
-├── app.py                       ## Flask backend server for model inference
-├── model_front.py                       ## PyTorch model architecture (CNNClassifier)
-├── data/                        ## Placeholder for dataset (excluded from repository)
-├── scripts/                     ## Future space for utility scripts (optional)
-├── README.md                     ## This documentation file
-├── requirements.yml              ## Conda environment specifications
-├── xaivision.html                ## Frontend HTML webpage (XAIVision interface)
+├── app.py               ## Flask backend server for model inference
+├── model_front.py        ## PyTorch model architecture (CNNClassifier)
+├── download_data.py      ## Script to automatically download the dataset (from Google Drive)
+├── main.ipynb            ## Main training notebook (finalized version)
+├── main_back.py          ## Backup of the model training code
+├── preprocess.py         ## Preprocessing helper functions
+├── src/                  ## (Empty or optional scripts folder - not actively used now)
+├── LICENSE               ## Open-source license information
+├── README.md             ## Project documentation
+├── requirements.yml      ## Conda environment specifications
+├── xaivision.html        ## Frontend webpage (XAIVision user interface)
+
+
 ```
 
 <a name="installation"></a>
