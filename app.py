@@ -1,10 +1,9 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import torch
-import torchvision.transforms as transforms
-from PIL import Image
+import cv2
 import os
-
+from src.preprocess import *
 from model_front import CNNClassifier
 
 app = Flask(__name__)
@@ -24,11 +23,6 @@ labels = [
     'Thoracic Spine', 'Wrist'
 ]
 
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-])
-
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
@@ -36,11 +30,15 @@ def predict():
             return jsonify({'success': False, 'error': 'No file uploaded'}), 400
 
         file = request.files['file']
-        img = Image.open(file.stream).convert('RGB')
-        img = transform(img).unsqueeze(0).to(device)
+        # Read image file as bytes and convert to NumPy array
+        file_bytes = np.frombuffer(file.read(), np.uint8)
+        img = cv2.imdecode(file_bytes, cv2.IMREAD_GRAYSCALE)
+
+        # Preprocess and predict
+        img_tensor = pre_processing(img).unsqueeze(0).to(device)
 
         with torch.no_grad():
-            outputs = model(img)
+            outputs = model(img_tensor)
             _, predicted = torch.max(outputs, 1)
             predicted_label = labels[predicted.item()]
 
@@ -50,4 +48,5 @@ def predict():
         return jsonify({'success': False, 'error': str(e)}), 500
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    app.run()

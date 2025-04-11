@@ -1,6 +1,5 @@
 import os
 import cv2
-import random
 import numpy as np
 import pandas as pd
 import torch
@@ -126,8 +125,8 @@ for epoch in range(epochs):
     avg_loss = running_loss / len(train_loader)
     print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}")
 
-# Optional: Save the trained model
-torch.save(model.state_dict(), "xray_model.pth")
+# Optional: Save the trained model.
+# torch.save(model.state_dict(), "xray_model.pth")
 
 
 from sklearn.metrics import confusion_matrix
