@@ -1,8 +1,6 @@
 # SFU CMPT 419 Project FieldView X-Ray: Anatomical Field of View Detection
-This repository is a template for your CMPT 419 course project.
-Replace the title with your project title, and **add a snappy acronym that people remember (mnemonic)**.
 
-Add a 1-2 line summary of your project here.
+**XAIVision** (X-ray Anatomical Intelligent Vision System) is a deep learning-based tool for detecting the anatomical field of view from X-ray images.
 Kai cho
 Iain Chun
 Brian Park
@@ -10,16 +8,10 @@ Brian Park
 
 ## Important Links
 
-| [Timesheet](https://1sfu-my.sharepoint.com/:x:/g/personal/hamarneh_sfu_ca/ESRhnQpkI5dKg9GvZc4fUsABxeIMR_tcFHX_5iz8kF9W0Q?e=WvBvzq) 
-| [Slack channel] (https://cmpt419spring2025.slack.com/archives/C086CRMLGLS) 
-| [Project report](https://www.overleaf.com/2253418857zcztgqzwfpgm#37e079) |
-|-----------|---------------|-------------------------|
-
-
-- Timesheet: Link your timesheet (pinned in your project's Slack channel) where you track per student the time and tasks completed/participated for this project/
-- Slack channel: Link your private Slack project channel.
-- Project report: Link your Overleaf project report document.
-
+| [Timesheet](https://1sfu-my.sharepoint.com/:x:/g/personal/hamarneh_sfu_ca/ESRhnQpkI5dKg9GvZc4fUsABxeIMR_tcFHX_5iz8kF9W0Q?e=WvBvzq) |
+ [Slack channel](https://cmpt419spring2025.slack.com/archives/C086CRMLGLS) |
+ [Project report](https://www.overleaf.com/2253418857zcztgqzwfpgm#37e079) |
+ [Database](https://www.kaggle.com/competitions/unifesp-x-ray-body-part-classifier) |
 
 ## Video/demo/GIF
 Record a short video (1:40 - 2 minutes maximum) or gif or a simple screen recording or even using PowerPoint with audio or with text, showcasing your work.
@@ -32,32 +24,36 @@ Record a short video (1:40 - 2 minutes maximum) or gif or a simple screen record
 
 3. [Reproducing this project](#repro)
 
-4. [Guidance](#guide)
+4. [Running the Website with Model Integration](#webs)
+
+5. [Guidance](#guide)
 
 
 <a name="demo"></a>
 ## 1. Example demo
 
-A minimal example to showcase your work
-
+Minimal example to demonstrate website prediction workflow:
 ```python
-from amazing import amazingexample
-imgs = amazingexample.demo()
-for img in imgs:
-    view(img)
+# Example: Sending an image to the backend
+import requests
+
+files = {'file': open('example_xray.jpg', 'rb')}
+response = requests.post('http://127.0.0.1:5000/predict', files=files)
+print(response.json())
 ```
 
 ### What to find where
 
-Explain briefly what files are found where
 
 ```bash
 repository
-├── src                          ## source code of the package itself
-├── scripts                      ## scripts, if needed
-├── docs                         ## If needed, documentation   
-├── README.md                    ## You are here
-├── requirements.yml             ## If you use conda
+├── app.py                       ## Flask backend server for model inference
+├── model.py                     ## PyTorch model architecture (CNNClassifier)
+├── data/                        ## Placeholder for dataset (excluded from repository)
+├── scripts/                     ## Future space for utility scripts (optional)
+├── README.md                     ## This documentation file
+├── requirements.yml              ## Conda environment specifications
+├── xaivision.html                ## Frontend HTML webpage (XAIVision interface)
 ```
 
 <a name="installation"></a>
@@ -66,29 +62,64 @@ repository
 
 Provide sufficient instructions to reproduce and install your project. 
 Provide _exact_ versions, test on CSIL or reference workstations.
+Follow these steps to install the project dependencies and environment:
 
 ```bash
 git clone $THISREPO
 cd $THISREPO
 conda env create -f requirements.yml
-conda activate amazing
+conda activate cmpt419_project
 ```
 
 <a name="repro"></a>
 ## 3. Reproduction
-Demonstrate how your work can be reproduced, e.g. the results in your report.
+Steps to reproduce the project setup:
 ```bash
-mkdir tmp && cd tmp
-wget https://yourstorageisourbusiness.com/dataset.zip
-unzip dataset.zip
-conda activate amazing
-python evaluate.py --epochs=10 --data=/in/put/dir
+# Step 1: Download Dataset
+python download_data.py  # (Downloads dataset from Google Drive automatically)
+
+# Step 2: Train Model
+conda activate cmpt419_project_pytorch
+python train_model.py    # (Alternatively, run main.ipynb)
+
+# Step 3: Launch Web Application
+python app.py
 ```
-Data can be found at ...
-Output will be saved in ...
+- Data: The dataset will be downloaded to the project root directory automatically.
+
+- Output: Model checkpoints will be saved as xray_model.pth.
+
+<a name="webs"></a>
+## 4. Running the Website with Model Integration
+After training or loading a pre-trained model ```xray_model.pth```, you can integrate it with the website as follows:
+### 1. Make sure these files are present:
+
+- ```app.py``` (Flask backend)
+
+- ```model.py``` (CNN model definition)
+
+- ```xray_model.pth``` (trained model weights)
+
+- ```xaivision.html``` (frontend)
+
+### 2. Launch the Flask server:
+
+```bash
+conda activate cmpt419_project_pytorch    # (Skip this if already activated)
+python app.py
+```
+### 3. Open the frontend:
+
+Open ```xaivision.html``` directly in your web browser (double-click or right-click → Open with Browser).
+
+### 4. Test the website:
+
+Upload an X-ray image using the "Upload an X-ray Image" button.
+
+The image will be sent to the backend ```localhost:5000/predict``` and the predicted anatomical field of view will be displayed.
 
 <a name="guide"></a>
-## 4. Guidance
+## 5. Guidance
 
 - Use [git](https://git-scm.com/book/en/v2)
     - Do NOT use history re-editing (rebase)
