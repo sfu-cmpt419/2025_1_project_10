@@ -86,7 +86,7 @@ conda activate cmpt419_project
 
 <a name="repro"></a>
 ## 3. Reproduction
-#### Important: The model ```xray_model.pth``` will not be newly saved even if you follow these steps. To save the model that you trained by running main.py on your own, modify main.py by uncommenting ln 129; ```torch.save(model.state_dict(), "xray_model.pth")```
+#### Important: The model ```xray_model.pth``` will not be newly saved even if you follow these steps. To save the model that you trained by running main.py on your own, modify main.py by uncommenting ln 177; ```torch.save(model.state_dict(), "xray_model.pth")```
 Steps to reproduce the project setup:
 ```bash
 # Step 1: Download Dataset

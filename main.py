@@ -6,18 +6,19 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.utils.data import Dataset, DataLoader
-
 from sklearn.model_selection import train_test_split
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from src.preprocess import *
 
+# Step 0: Data Preparation
 train_df = pd.read_csv('data/train_df.csv', usecols=['image_path', 'Target'])
-
 train_df['Target'] = train_df['Target'].str.strip()
 train_df['image_path'] = train_df['image_path'].apply(lambda x: os.path.join("data", x.lstrip("./")))
 
+# Fix multi-labels
 multi_labels = [i for i, target in enumerate(train_df['Target']) if len(target) > 2]
-
 corrected_labels = []
 
 for ml in multi_labels:    
@@ -26,19 +27,28 @@ for ml in multi_labels:
 train_df = pd.concat([train_df.drop(train_df.loc[multi_labels].index),
                      pd.DataFrame(corrected_labels, columns=['image_path', 'Target'])], ignore_index=True)
 
-split_data = train_df[['image_path', 'Target']]
-train, test = train_test_split(train_df[['image_path', 'Target']], test_size=0.2)
 
-# Step 1: Dataset and DataLoader
+# Stratified Split: Train, Validation, Test
+# Split Train into Train+Val (85%) and Test (15%)
+trainval_df, test_df = train_test_split(
+    train_df,
+    test_size=0.15,
+    random_state=42,
+    stratify=train_df['Target']
+)
+
+# Then split Train+Val into Train (70%) and Val (15%)
+train_df_final, val_df = train_test_split(
+    trainval_df,
+    test_size=0.1765,  # 0.1765 * 0.85 ≈ 0.15
+    random_state=42,
+    stratify=trainval_df['Target']
+)
+
+# Step 1: Dataset Class
 class XrayDataset(Dataset):
-    def __init__(self, dataframe, transform=None):
-        """
-        Args:
-            dataframe (pd.DataFrame): DataFrame with columns "Target" and "image_path".
-            transform (callable, optional): Transform to be applied on an image.
-        """
+    def __init__(self, dataframe):
         self.df = dataframe
-        self.transform = transform
 
     def __len__(self):
         return len(self.df)
@@ -54,13 +64,9 @@ class XrayDataset(Dataset):
         img_tensor = pre_processing(img)
         return img_tensor, label
 
-
-train_dataset = XrayDataset(train)  # Don't pass transform
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-
-test_dataset = XrayDataset(test)    # Same here
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-
+train_loader = DataLoader(XrayDataset(train_df_final), batch_size=32, shuffle=True)
+val_loader = DataLoader(XrayDataset(val_df), batch_size=32, shuffle=False)
+test_loader = DataLoader(XrayDataset(test_df), batch_size=32, shuffle=False)
 
 # Step 2: CNN Model Definition
 class CNNClassifier(nn.Module):
@@ -88,13 +94,12 @@ class CNNClassifier(nn.Module):
         x = self.fc2(x)                     # logits output
         return x
 
+# Step 3: Training Setup
 # Determine the device (GPU if available)
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-# It's a good idea to automatically determine the number of classes.
 num_classes = train_df["Target"].nunique()  
 model = CNNClassifier(num_classes=num_classes).to(device)
 
-# Step 3: Define Loss Function and Optimizer
 criterion = nn.CrossEntropyLoss()
 
 # Add weight decay to help generalization
@@ -104,14 +109,22 @@ optimizer = torch.optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-4)
 scheduler = torch.optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.5)
 
 # Step 4: Training Loop
-epochs = 100  # You can adjust the number of epochs as needed
+epochs = 10  # You can adjust the number of epochs as needed
+
+train_losses = []
+val_losses = []
+train_accuracies = []
+val_accuracies = []
+
 
 for epoch in range(epochs):
     model.train()
     running_loss = 0.0
+    correct_predictions = 0
+    total_samples = 0
+
     for images, labels in train_loader:
         images = images.to(device)
-        # Ensure labels are the right type (long) for CrossEntropyLoss.
         labels = labels.to(device).long()
 
         optimizer.zero_grad()
@@ -122,13 +135,48 @@ for epoch in range(epochs):
 
         running_loss += loss.item()
 
+        _, preds = torch.max(outputs, 1)
+        correct_predictions += (preds == labels).sum().item()
+        total_samples += labels.size(0)
+
     avg_loss = running_loss / len(train_loader)
-    print(f"Epoch [{epoch+1}/{epochs}], Loss: {avg_loss:.4f}")
+    accuracy = 100 * correct_predictions / total_samples
+
+    model.eval()  # set model to evaluation mode
+    
+    val_running_loss = 0.0
+    val_correct = 0
+    val_total = 0
+
+    with torch.no_grad():
+        for val_images, val_labels in val_loader:
+            val_images = val_images.to(device)
+            val_labels = val_labels.to(device).long()
+
+            val_outputs = model(val_images)
+            val_loss = criterion(val_outputs, val_labels)
+
+            val_running_loss += val_loss.item()
+            _, val_preds = torch.max(val_outputs, 1)
+            val_correct += (val_preds == val_labels).sum().item()
+            val_total += val_labels.size(0)
+
+    val_avg_loss = val_running_loss / len(val_loader)
+    val_accuracy = 100 * val_correct / val_total
+
+    train_losses.append(avg_loss)
+    val_losses.append(val_avg_loss)
+    train_accuracies.append(accuracy)
+    val_accuracies.append(val_accuracy)
+
+    print(f"Epoch [{epoch+1}/{epochs}] "
+      f"- Train Loss: {avg_loss:.4f}, Train Accuracy: {accuracy:.2f}% "
+      f"- Val Loss: {val_avg_loss:.4f}, Val Accuracy: {val_accuracy:.2f}%")
 
 # Optional: Save the trained model.
 # torch.save(model.state_dict(), "xray_model.pth")
 
-
+# Step 5: Confusion Matrix
 from sklearn.metrics import confusion_matrix
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -142,7 +190,7 @@ with torch.no_grad():
     for images, labels in test_loader:
         images = images.to(device)
         # Ensure labels are tensors and in the correct type
-        labels = torch.tensor(labels, device=device, dtype=torch.long)
+        labels = labels.to(device).long()
         
         # Get model predictions
         outputs = model(images)
@@ -168,4 +216,27 @@ sns.heatmap(np.round(conf_metric_normalized, 2),
 plt.xlabel('True labels')
 plt.ylabel('Predicted labels')
 plt.title('Normalized Confusion Matrix')
+plt.show()
+
+# Step 6: Accuracy and Loss Plots
+# Plot Accuracy
+plt.figure(figsize=[12,6], dpi=300)
+sns.lineplot(x=list(range(1, epochs+1)), y=train_accuracies, label='Train Accuracy')
+sns.lineplot(x=list(range(1, epochs+1)), y=val_accuracies, label='Validation Accuracy')
+plt.xlabel('Epoch')
+plt.ylabel('Accuracy (%)')
+plt.title('Training vs Validation Accuracy')
+plt.legend()
+plt.grid()
+plt.show()
+
+# Plot Loss
+plt.figure(figsize=[12,6], dpi=300)
+sns.lineplot(x=list(range(1, epochs+1)), y=train_losses, label='Train Loss')
+sns.lineplot(x=list(range(1, epochs+1)), y=val_losses, label='Validation Loss')
+plt.xlabel('Epoch')
+plt.ylabel('Loss')
+plt.title('Training vs Validation Loss')
+plt.legend()
+plt.grid()
 plt.show()
